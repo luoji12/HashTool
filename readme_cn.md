@@ -23,7 +23,7 @@ HashTool 是一个基于 **VB.NET + WPF** 开发的轻量级 **Windows 桌面文
 
 ## 🖼️ 界面预览
 
-> 可在此处添加程序运行截图
+![HashTool 界面预览](screenshot.png)
 
 ## 🛠️ 技术栈
 
