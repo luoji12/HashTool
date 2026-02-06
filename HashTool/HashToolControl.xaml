@@ -1,0 +1,519 @@
+﻿<UserControl x:Class="HashTool.HashToolControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="740" MinHeight="440"
+             Background="Transparent">
+
+    <UserControl.Resources>
+
+        <!-- Palette -->
+        <SolidColorBrush x:Key="CardBg" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Stroke" Color="#14000000"/>
+        <SolidColorBrush x:Key="StrokeStrong" Color="#22000000"/>
+        <SolidColorBrush x:Key="TextMuted" Color="#6B7280"/>
+        <SolidColorBrush x:Key="TextMain" Color="#111827"/>
+
+        <SolidColorBrush x:Key="Primary" Color="#2563EB"/>
+        <SolidColorBrush x:Key="PrimaryHover" Color="#1D4ED8"/>
+
+        <CornerRadius x:Key="R12">12</CornerRadius>
+        <CornerRadius x:Key="R10">10</CornerRadius>
+        <CornerRadius x:Key="R8">8</CornerRadius>
+
+        <DropShadowEffect x:Key="Shadow"
+                          Color="#000000"
+                          BlurRadius="18"
+                          ShadowDepth="2"
+                          Opacity="0.10"/>
+
+        <!-- Typography -->
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextMain}"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style x:Key="H1" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,2"/>
+        </Style>
+
+        <Style x:Key="Muted" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextMuted}"/>
+        </Style>
+
+        <!-- Card -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Stroke}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="{StaticResource R12}"/>
+            <Setter Property="Effect" Value="{StaticResource Shadow}"/>
+            <Setter Property="Padding" Value="14"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+        </Style>
+
+        <!-- TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeStrong}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <!-- Button base -->
+        <Style x:Key="BtnBase" TargetType="Button">
+            <Setter Property="Padding" Value="12,7"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeStrong}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{StaticResource R8}">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- hover 轻微变灰 -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#F3F4F6"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#E5E7EB"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Primary -->
+        <Style x:Key="BtnPrimary" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{StaticResource Primary}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{StaticResource R8}">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource PrimaryHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Spinner 小按钮：hover 轻微变灰 + 右上/右下共享圆角 -->
+        <Style x:Key="SpinBtnBase" TargetType="RepeatButton">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeStrong}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border x:Name="bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="0">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#F3F4F6"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#E5E7EB"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SpinBtnUp" TargetType="RepeatButton" BasedOn="{StaticResource SpinBtnBase}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border x:Name="bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="0,8,0,0">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#F3F4F6"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#E5E7EB"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SpinBtnDown" TargetType="RepeatButton" BasedOn="{StaticResource SpinBtnBase}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border x:Name="bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="0,0,8,0">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#F3F4F6"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#E5E7EB"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Segmented CheckBox：未选中白色，选中蓝色 -->
+        <Style x:Key="SegCheckBase" TargetType="CheckBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="#111827"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border x:Name="bd"
+                                Background="#FFFFFF"
+                                BorderBrush="{StaticResource StrokeStrong}"
+                                BorderThickness="1">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#F3F4F6"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#552563EB"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#2563EB"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#2563EB"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SegLeft" TargetType="CheckBox" BasedOn="{StaticResource SegCheckBase}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border x:Name="bd"
+                                Background="#FFFFFF"
+                                BorderBrush="{StaticResource StrokeStrong}"
+                                BorderThickness="1"
+                                CornerRadius="10,0,0,10">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#F3F4F6"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#552563EB"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#2563EB"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#2563EB"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SegRight" TargetType="CheckBox" BasedOn="{StaticResource SegCheckBase}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border x:Name="bd"
+                                Background="#FFFFFF"
+                                BorderBrush="{StaticResource StrokeStrong}"
+                                BorderThickness="1"
+                                CornerRadius="0,10,10,0">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#F3F4F6"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#552563EB"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#2563EB"/>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#2563EB"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <!-- ✅ 关键：外层用 Border 画底色，但不破坏窗口圆角裁剪 -->
+    <Border x:Name="RootBgBorder"
+            Background="#F7F8FB"
+            SnapsToDevicePixels="True">
+
+        <Grid Margin="16" Background="#F7F8FB">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource H1}" Text="HashTool"/>
+                        <TextBlock Style="{StaticResource Muted}" Text="轻量、实时的文件哈希计算工具。"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Width="150"
+                                CornerRadius="{StaticResource R10}"
+                                Background="#FFFFFF"
+                                BorderBrush="{StaticResource StrokeStrong}"
+                                BorderThickness="1"
+                                SnapsToDevicePixels="True"
+                                Margin="0,0,12,0">
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <CheckBox x:Name="ChkMd5" Grid.Column="0" Style="{StaticResource SegLeft}"
+                                          Content="MD5" IsChecked="True" Checked="Algo_Checked" Unchecked="Algo_Unchecked"
+                                          HorizontalContentAlignment="Center"
+                                          HorizontalAlignment="Stretch"/>
+
+                                <Border Grid.Column="1" Width="1" Background="{StaticResource StrokeStrong}"/>
+
+                                <CheckBox x:Name="ChkSha" Grid.Column="2" Style="{StaticResource SegRight}"
+                                          Content="SHA256" IsChecked="True" Checked="Algo_Checked" Unchecked="Algo_Unchecked"
+                                          HorizontalContentAlignment="Center"
+                                          HorizontalAlignment="Stretch"/>
+                            </Grid>
+                        </Border>
+
+                        <Button x:Name="BtnOpen" Style="{StaticResource BtnPrimary}"
+                                Content="打开文件…" Click="BtnOpen_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Main -->
+            <Grid Grid.Row="1" Margin="0,12,0,12" Background="Transparent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="280"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left -->
+                <Border Grid.Column="0" Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Style="{StaticResource H1}" Text="设置"/>
+
+                        <TextBlock Grid.Row="1" Style="{StaticResource Muted}" Text="线程数" Margin="0,10,0,6"/>
+
+                        <!-- 线程数 Spinner -->
+                        <DockPanel Grid.Row="2" LastChildFill="False">
+                            <Grid Width="120" Margin="0,0,8,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="22"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox x:Name="TxtThreads"
+                                         Grid.Column="0"
+                                         TextAlignment="Right"
+                                         VerticalContentAlignment="Center"
+                                         Padding="10,7"/>
+
+                                <Grid Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <RepeatButton x:Name="BtnThrUp"
+                                                  Grid.Row="0"
+                                                  Style="{StaticResource SpinBtnUp}"
+                                                  Content="▲"
+                                                  FontSize="9"
+                                                  Delay="250" Interval="60"
+                                                  Click="BtnThrUp_Click"/>
+
+                                    <RepeatButton x:Name="BtnThrDown"
+                                                  Grid.Row="1"
+                                                  Style="{StaticResource SpinBtnDown}"
+                                                  Content="▼"
+                                                  FontSize="9"
+                                                  Delay="250" Interval="60"
+                                                  Click="BtnThrDown_Click"/>
+                                </Grid>
+                            </Grid>
+
+                            <Button x:Name="BtnApplyThr"
+                                    Style="{StaticResource BtnBase}"
+                                    Content="应用"
+                                    Click="BtnApplyThr_Click"/>
+                        </DockPanel>
+
+                        <TextBlock Grid.Row="3" Style="{StaticResource Muted}" Text="进度" Margin="0,14,0,6"/>
+                        <ProgressBar x:Name="Prog" Grid.Row="4" Height="16" Minimum="0" Maximum="100"/>
+
+                        <Border Grid.Row="5" Margin="0,12,0,0"
+                                CornerRadius="{StaticResource R10}"
+                                Background="#F9FAFB"
+                                BorderBrush="{StaticResource Stroke}"
+                                BorderThickness="1"
+                                Padding="10">
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource Muted}" Text="状态"/>
+                                <TextBlock x:Name="TxtStatus" Text="准备就绪" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Right -->
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <DockPanel Grid.Row="0" Margin="0,0,0,10">
+                            <TextBlock Style="{StaticResource H1}" Text="输出"/>
+                            <TextBlock Style="{StaticResource Muted}" Text="（UTF-16）" Margin="10,3,0,0"/>
+                        </DockPanel>
+
+                        <TextBox x:Name="TxtOut" Grid.Row="1"
+                                 FontFamily="Consolas"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 HorizontalScrollBarVisibility="Auto"
+                                 IsReadOnly="True"
+                                 Background="#FCFCFD"
+                                 BorderBrush="{StaticResource StrokeStrong}"
+                                 BorderThickness="1"
+                                 Padding="10"/>
+
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                            <Button x:Name="BtnCopy" Style="{StaticResource BtnBase}"
+                                    Content="复制" Margin="0,0,8,0"
+                                    Click="BtnCopy_Click"/>
+                            <Button x:Name="BtnExport" Style="{StaticResource BtnBase}"
+                                    Content="导出" Margin="0,0,8,0"
+                                    Click="BtnExport_Click"/>
+                            <Button x:Name="BtnClear" Style="{StaticResource BtnBase}"
+                                    Content="清空"
+                                    Click="BtnClear_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="2" CornerRadius="{StaticResource R10}"
+                    Background="#FFFFFF" BorderBrush="{StaticResource Stroke}"
+                    BorderThickness="1" Padding="10">
+                <TextBlock Style="{StaticResource Muted}"
+                           Text="提示：拖拽文件/文件夹到窗口任意区域即可导入。"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,195 @@
+﻿<Window x:Class="HashTool.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:HashTool"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="HashTool"
+        Width="980" Height="620"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+	    Background="Transparent"
+     	AllowsTransparency="True"
+    	UseLayoutRounding="True"
+	    SnapsToDevicePixels="True"
+	    Loaded="Window_Loaded"
+	    SourceInitialized="Window_SourceInitialized"
+	    StateChanged="Window_StateChanged"
+	    AllowDrop="True"
+	    PreviewDragOver="Window_PreviewDragOver"
+	    PreviewDrop="Window_PreviewDrop">
+
+	<!-- WindowChrome：保留系统拖动/Resize/贴边，但没有系统标题栏 -->
+	<shell:WindowChrome.WindowChrome>
+		<shell:WindowChrome CaptionHeight="40"
+                            ResizeBorderThickness="6"
+                            CornerRadius="12"
+                            GlassFrameThickness="0"
+                            UseAeroCaptionButtons="False"/>
+	</shell:WindowChrome.WindowChrome>
+
+	<!-- ✅ 最外层不要透明，避免露角/黑边 -->
+	<Grid Background="Transparent">
+		<Grid.Resources>
+			<Color x:Key="ThemeShadowColor">#2563EB</Color>
+		</Grid.Resources>
+
+		<!-- 外层：RootCard -->
+		<!-- Theme-colored layered shadow (same hue, gradually stronger) -->
+		<Border CornerRadius="12" Margin="14" Background="Transparent">
+			<Border.Effect>
+				<DropShadowEffect BlurRadius="32" ShadowDepth="0" Opacity="0.10" Color="{StaticResource ThemeShadowColor}"/>
+			</Border.Effect>
+		</Border>
+		<Border CornerRadius="12" Margin="14" Background="Transparent">
+			<Border.Effect>
+				<DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.16" Color="{StaticResource ThemeShadowColor}"/>
+			</Border.Effect>
+		</Border>
+		<Border CornerRadius="12" Margin="14" Background="Transparent">
+			<Border.Effect>
+				<DropShadowEffect BlurRadius="10" ShadowDepth="0" Opacity="0.22" Color="{StaticResource ThemeShadowColor}"/>
+			</Border.Effect>
+		</Border>
+
+		<!-- Outer card -->
+		<Border x:Name="RootCard"
+                Margin="14"
+                CornerRadius="12"
+                Background="#F7F8FB"
+                BorderBrush="#12000000"
+                BorderThickness="1"
+                ClipToBounds="True"
+                SizeChanged="RootCard_SizeChanged"
+                SnapsToDevicePixels="True">
+
+			<Grid>
+				<!-- 内描边 -->
+				<Border x:Name="InnerStroke"
+                        Margin="1"
+                        CornerRadius="9"
+                        Background="Transparent"
+                        BorderBrush="#14000000"
+                        BorderThickness="1"
+                        IsHitTestVisible="False"
+                        SnapsToDevicePixels="True"/>
+
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="40"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+
+					<!-- 顶部自绘标题栏 -->
+					<Grid Grid.Row="0"
+                          x:Name="TitleBar"
+                          Background="Transparent"
+                          MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
+                          shell:WindowChrome.IsHitTestVisibleInChrome="True">
+
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+
+						<StackPanel Orientation="Horizontal"
+                                    VerticalAlignment="Center"
+                                    Margin="12,0,0,0">
+                            <Image Width="22" Height="22"
+                                   Margin="0,0,0,0"
+                                   Source="pack://application:,,,/favicon.ico"
+                                   RenderOptions.BitmapScalingMode="HighQuality"
+                                   SnapsToDevicePixels="True"
+                                   VerticalAlignment="Center"
+                                   IsHitTestVisible="False"/>
+
+                            <TextBlock Text="HashTool"
+                                       Margin="10,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"
+                                       Foreground="#111827"/>
+						</StackPanel>
+
+						<TextBlock Grid.Column="1"
+                                   Text="Drag files/folders here to hash"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Foreground="#6B7280"
+                                   FontSize="12"/>
+
+						<StackPanel Grid.Column="2"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Stretch">
+
+							<Button x:Name="BtnMin"
+                                    Width="46" Height="40"
+                                    Click="BtnMin_Click"
+                                    ToolTip="Minimize"
+                                    Background="Transparent"
+                                    BorderThickness="0">
+								<TextBlock Text="—"
+                                           FontSize="16"
+                                           Foreground="#111827"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+							</Button>
+
+							<Button x:Name="BtnMax"
+                                    Width="46" Height="40"
+                                    Click="BtnMax_Click"
+                                    ToolTip="Maximize"
+                                    Background="Transparent"
+                                    BorderThickness="0">
+								<TextBlock x:Name="BtnMaxGlyph"
+                                           Text="☐"
+                                           FontSize="13"
+                                           Foreground="#111827"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+							</Button>
+
+							<Button x:Name="BtnClose"
+                                    Width="46" Height="40"
+                                    Click="BtnClose_Click"
+                                    ToolTip="Close"
+                                    Background="Transparent"
+                                    BorderThickness="0">
+								<TextBlock Text="✕"
+                                           FontSize="13"
+                                           Foreground="#111827"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+							</Button>
+						</StackPanel>
+					</Grid>
+
+					<!-- 内容区：✅ 不要透明背景，避免“露尖角” -->
+					<Border Grid.Row="1"
+                            CornerRadius="0,0,10,10"
+                            Background="#F7F8FB"
+                            ClipToBounds="True">
+						<local:HashToolControl x:Name="HashUI"/>
+					</Border>
+
+					<!-- 拖拽高亮遮罩 -->
+					<Border x:Name="DragOverlay"
+                            Grid.RowSpan="2"
+                            CornerRadius="10"
+                            Background="#332563EB"
+                            BorderBrush="#662563EB"
+                            BorderThickness="2"
+                            Visibility="Collapsed"
+                            IsHitTestVisible="False">
+						<TextBlock Text="松开以导入文件/文件夹"
+                                   Foreground="White"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+					</Border>
+
+				</Grid>
+			</Grid>
+		</Border>
+	</Grid>
+</Window>
